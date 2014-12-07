@@ -1,5 +1,6 @@
 package controller;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,8 @@ import dao.MemberDB;
 
 public class BoardController {
 
+	public static final int EDIT_DUE_DATE = 7;
+	public static final int EDIT_DESC = 6;
 	public static final int ASSIGN_MEMBER = 5;
 	public static final int ASSIGN_LABEL = 4;
 	public static final int EDIT_TITLE = 1;
@@ -259,6 +262,9 @@ public class BoardController {
 		CardDB editor = new CardDB(ip, username, password);
 		editor.card.setId(id);
 		editor.card.setListId(listId);
+		
+		//TODO check the values for security and invalid input
+		
 		try {
 			switch(choice) {
 			case EDIT_TITLE: 
@@ -280,6 +286,17 @@ public class BoardController {
 				editor.card.setMember_id(value);
 				editor.updateCardMember();
 				break;
+			case EDIT_DESC:
+				editor.card.setDescription(strValue);
+				editor.updateDesc();
+				break;
+			case EDIT_DUE_DATE:
+				Date due = java.sql.Date.valueOf(strValue);
+				if(due != null) {
+					editor.card.setDueDate(due);
+					editor.updateDueDate();
+				}
+				break;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -288,6 +305,34 @@ public class BoardController {
 		return ("Edited Card #"+ id);
 	}
 
+	//get card description and due date
+	public String getCardDetails(int id) {
+		StringBuilder details = new StringBuilder();
+		CardDB retriever = new CardDB(ip, username, password);
+		retriever.card.setId(id);
+		Card detail = new Card();
+		detail.setId(id);
+		try {
+			detail = retriever.getCardById();
+			if(detail.getDescription() != null) {
+					details.append(" Description: "+ detail.getDescription());
+			} else {
+				details.append(" No Description provided");
+			}
+			if(detail.getDueDate() != null) {
+				details.append(" Due Date: "+ detail.getDueDate());
+			} else {
+				details.append(" No due date provided");
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return details.toString();
+	}
 	//list all cards
 	public String listAllCardsForList(int listId) {
 		CardDB cardFetch = new CardDB(ip, username, password);

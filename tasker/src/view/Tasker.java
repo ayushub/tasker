@@ -7,6 +7,7 @@ import controller.BoardController;
 public class Tasker {
 
 	
+	private static final int CARD_DETAILS = 2;
 	private static final int DISPLAY_BOARD = 1;
 	private static final int ASSIGN_LABEL = 7;
 	private static final int ASSIGN_MEMBER = 8;
@@ -130,12 +131,12 @@ public class Tasker {
 						break;
 					case RENAME_BOARD: 
 						System.out.println("Enter new name for the Board");
-						String name = userStringInput.nextLine();
-						if(name.isEmpty()) {
+						String desc = userStringInput.nextLine();
+						if(desc.isEmpty()) {
 							System.out.println("shouldn't have pressed enter!");
 							break;
 						}
-						boardControl.editBoard(currentBoard, name);
+						boardControl.editBoard(currentBoard, desc);
 //						System.out.println("Renamed the board");
 						break;
 					case ARCHIVE_BOARD:
@@ -158,12 +159,12 @@ public class Tasker {
 						
 						case CREATE_LIST:
 							System.out.println("Enter a title for the list");
-							name = userStringInput.nextLine();
-							if(name.isEmpty()) {
+							desc = userStringInput.nextLine();
+							if(desc.isEmpty()) {
 								System.out.println("shouldn't have pressed enter!");
 								break;
 							}
-							System.out.println(boardControl.createList(name, currentBoard));
+							System.out.println(boardControl.createList(desc, currentBoard));
 							break;
 						case RENAME_LIST:
 							String listOfLists = boardControl.listAllListsForBoard(currentBoard);
@@ -177,12 +178,12 @@ public class Tasker {
 							int listId = userIntegerInput.nextInt();
 							
 							System.out.println("Enter new name for the List");
-							name = userStringInput.nextLine();
-							if(name.isEmpty()) {
+							desc = userStringInput.nextLine();
+							if(desc.isEmpty()) {
 								System.out.println("shouldn't have pressed enter!");
 								break;
 							}
-							boardControl.editListOnBoard(listId, name, -1, currentBoard);
+							boardControl.editListOnBoard(listId, desc, -1, currentBoard);
 							break;
 						case ARCHIVE_LIST:
 							listOfLists = boardControl.listAllListsForBoard(currentBoard);
@@ -249,27 +250,14 @@ public class Tasker {
 							int listId = userIntegerInput.nextInt();
 							
 							System.out.println("Enter a title for the card");
-							name = userStringInput.nextLine();
-							if(name.isEmpty()) {
+							desc = userStringInput.nextLine();
+							if(desc.isEmpty()) {
 								System.out.println("shouldn't have pressed enter!");
 								break;
 							}
-							System.out.println(boardControl.createCard(name, listId));
+							System.out.println(boardControl.createCard(desc, listId));
 							break;
-						case 2:
-							listOfLists = boardControl.listAllListsForBoard(currentBoard);
-							if(listOfLists.isEmpty()) {
-								System.out.println("Please create a list first!");
-								break;
-							} 
-							System.out.println(listOfLists);
-							
-							System.out.println("Enter list (ID) for which card is to be edited :");
-							listId = userIntegerInput.nextInt();
-							
-							
-							break;
-						case RENAME_CARD:
+						case CARD_DETAILS:
 							listOfLists = boardControl.listAllListsForBoard(currentBoard);
 							if(listOfLists.isEmpty()) {
 								System.out.println("Please create a list first!");
@@ -289,13 +277,53 @@ public class Tasker {
 							System.out.println("Enter card (ID) to be edited :");
 							int cardId = userIntegerInput.nextInt();
 							
+							String details = boardControl.getCardDetails(cardId);
+							System.out.println("Current details are: \n" +details + "\n");
+							System.out.println("Enter description for the Card:");
+							desc = userStringInput.nextLine();
+							desc = userStringInput.nextLine();
+							if(desc.isEmpty()) {
+								System.out.println("No description added! Another try ? Or press enter again to leave it unchanged");
+								desc = userStringInput.nextLine();  
+							}
+							if(!desc.isEmpty())
+								boardControl.editCardOnList(cardId, desc, -1, listId, BoardController.EDIT_DESC);
+							System.out.println("Enter a due date (yyyy-MM-dd)");
+							String date = userStringInput.nextLine();
+							if(date.isEmpty()) {
+								System.out.println("No date added! Another try ? Or press enter again to leave it unchanged");
+								date = userStringInput.nextLine();  
+							}
+							if(!date.isEmpty())
+								boardControl.editCardOnList(cardId, date, -1, listId, BoardController.EDIT_DUE_DATE);
+							break;
+						case RENAME_CARD:
+							listOfLists = boardControl.listAllListsForBoard(currentBoard);
+							if(listOfLists.isEmpty()) {
+								System.out.println("Please create a list first!");
+								break;
+							} 
+							System.out.println(listOfLists);
+							
+							System.out.println("Enter list (ID) for which card is to be edited :");
+							listId = userIntegerInput.nextInt();
+							
+							listOfCards = boardControl.listAllCardsForList(listId);
+							if(listOfCards.isEmpty()) {
+								System.out.println("No cards to edit");
+								break;
+							} 
+							System.out.println(listOfCards);
+							System.out.println("Enter card (ID) to be edited :");
+							cardId = userIntegerInput.nextInt();
+							
 							System.out.println("Enter new name for the Card");
-							name = userStringInput.nextLine();
-							if(name.isEmpty()) {
+							desc = userStringInput.nextLine();
+							if(desc.isEmpty()) {
 								System.out.println("shouldn't have pressed enter!");
 								break;
 							}
-							boardControl.editCardOnList(cardId, name, -1, listId, BoardController.EDIT_TITLE);
+							boardControl.editCardOnList(cardId, desc, -1, listId, BoardController.EDIT_TITLE);
 							break;
 						case ARCHIVE_CARD:
 							listOfLists = boardControl.listAllListsForBoard(currentBoard);
@@ -450,24 +478,24 @@ public class Tasker {
 						switch(withinBoardChoice) {
 						case CREATE_MEMBER:
 							System.out.println("Enter the name for the member");
-							name = userStringInput.nextLine();
-							if(name.isEmpty()) {
+							desc = userStringInput.nextLine();
+							if(desc.isEmpty()) {
 								System.out.println("shouldn't have pressed enter!");
 								break;
 							}
-							System.out.println(boardControl.createMember(name));
+							System.out.println(boardControl.createMember(desc));
 							break;
 						case RENAME_MEMBER:
 							System.out.println("Enter the ID of the member to be renamed:");
 							int memberId = userIntegerInput.nextInt();
 							
 							System.out.println("Enter new name for the member");
-							name = userStringInput.nextLine();
-							if(name.isEmpty()) {
+							desc = userStringInput.nextLine();
+							if(desc.isEmpty()) {
 								System.out.println("shouldn't have pressed enter!");
 								break;
 							}
-							boardControl.editMember(memberId, name);
+							boardControl.editMember(memberId, desc);
 							break;
 						case ARCHIVE_MEMBER:
 							System.out.println("Enter the ID of the member to be archived:");
@@ -497,12 +525,12 @@ public class Tasker {
 							int labelId = userIntegerInput.nextInt();
 							
 							System.out.println("Enter new name for the label");
-							name = userStringInput.nextLine();
-							if(name.isEmpty()) {
+							desc = userStringInput.nextLine();
+							if(desc.isEmpty()) {
 								System.out.println("shouldn't have pressed enter!");
 								break;
 							}
-							boardControl.editLabel(labelId, name, currentBoard);
+							boardControl.editLabel(labelId, desc, currentBoard);
 							break;
 						case 2:
 							break;

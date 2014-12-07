@@ -22,6 +22,8 @@ public class CardDB {
 	private java.sql.PreparedStatement updateRecordLabel;
 	private java.sql.PreparedStatement updateRecordMember;
 	private java.sql.PreparedStatement updateRecordOrder;
+	private java.sql.PreparedStatement updateRecordDesc;
+	private java.sql.PreparedStatement updateRecordDueDate;
 	private java.sql.PreparedStatement archiveRecordById;
 	private java.sql.PreparedStatement archiveRecordByListId;
 	private java.sql.PreparedStatement removeRecord;
@@ -63,6 +65,16 @@ public class CardDB {
 
 			updateRecordOrder = connection.prepareStatement("UPDATE `Cards` SET"
 					+ "`c_order`= ?"
+					+ " WHERE "
+					+ " `id` = ?"); 
+
+			updateRecordDesc = connection.prepareStatement("UPDATE `Cards` SET"
+					+ "`description`= ?"
+					+ " WHERE "
+					+ " `id` = ?"); 
+
+			updateRecordDueDate = connection.prepareStatement("UPDATE `Cards` SET"
+					+ "`due_date`= ?"
 					+ " WHERE "
 					+ " `id` = ?"); 
 
@@ -119,7 +131,7 @@ public class CardDB {
 		updateRecordLabel.setInt(2, this.card.getId());
 		updateRecordLabel.executeUpdate();
 	}
-	
+
 	//update card member
 	public void updateCardMember () throws SQLException{
 		updateRecordMember.setInt(1, this.card.getMember_id());
@@ -198,6 +210,20 @@ public class CardDB {
 
 	}
 
+	//update description
+	public void updateDesc() throws SQLException {
+		updateRecordDesc.setString(1, card.getDescription());
+		updateRecordDesc.setInt(2, card.getId());
+		updateRecordDesc.executeUpdate();
+	}
+
+	//update due date
+	public void updateDueDate () throws SQLException {
+		updateRecordDueDate.setDate(1, card.getDueDate());
+		updateRecordDueDate.setInt(2, card.getId());
+		updateRecordDueDate.executeUpdate();
+	}
+
 	//archive or unarchive record
 	public void archiveUnarchiveCard (int level) throws SQLException{
 		if( level == 1) {
@@ -211,7 +237,23 @@ public class CardDB {
 		}
 	}
 
-	//get Card
+	//get a Card
+	public Card getCardById() throws SQLException {
+		Card myCard = new Card();
+		myCard.setId(card.getId());
+		getRecordById.setInt(1, card.getId());
+		ResultSet getDetails = getRecordById.executeQuery();
+		if(getDetails.next()) {
+			myCard.setDueDate(getDetails.getDate("due_date"));
+			myCard.setDescription(getDetails.getString("description"));
+			myCard.setLabel_id(getDetails.getInt("label_id"));
+			myCard.setMember_id(getDetails.getInt("member_id"));
+			myCard.setTitle(getDetails.getString("title"));
+		}
+		return myCard;
+	}
+
+	//get all cards of a list
 	public ArrayList<Card> getAllCardsForList (int listId) throws SQLException{
 		ArrayList<Card> myCards = new ArrayList<Card>();
 		ResultSet results = getRecords.executeQuery();
@@ -250,6 +292,8 @@ public class CardDB {
 			updateRecordLabel.close();
 			updateRecordMember.close();
 			updateRecordOrder.close();
+			updateRecordDesc.close();
+			updateRecordDueDate.close();
 			archiveRecordById.close();
 			archiveRecordByListId.close();
 			removeRecord.close();
