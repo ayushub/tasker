@@ -267,7 +267,10 @@ public class CardDB {
 				tmp.setId(results.getInt("id"));
 				tmp.setTitle(results.getString("title"));
 				tmp.setOrder(results.getInt("c_order"));
-
+				tmp.setDescription(results.getString("description"));
+				tmp.setDueDate(results.getDate("due_date"));
+				tmp.setLabel_id(results.getInt("label_id"));
+				tmp.setMember_id(results.getInt("member_id"));
 				myCards.add(tmp);
 			}
 		}

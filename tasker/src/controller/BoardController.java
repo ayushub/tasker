@@ -51,13 +51,20 @@ public class BoardController {
 		ArrayList<List> myLists;
 		try {
 			myLists = getLists.getAllListsForBoard(id);
+			Collections.sort(myLists);
 			ArrayList<Card> myCards;
 			for(List l: myLists) {
-				boardDisplay.append("|--- " + l.getTitle() +"\n");
+				boardDisplay.append("\nList: " + l.getTitle());
 				myCards = getCards.getAllCardsForList(l.getId());
-				for (Card c: myCards) {
-					boardDisplay.append("  -|--" + c.getTitle() +"\n");
+				if(myCards.isEmpty()) {
+					continue;
 				}
+				boardDisplay.append(" {\n");
+				Collections.sort(myCards);
+				for (Card c: myCards) {
+					boardDisplay.append("    Card: " + c.getTitle());
+				}
+				boardDisplay.append("\n}");
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -81,6 +88,10 @@ public class BoardController {
 			cardVanisher.resetCards();
 			listVanisher.resetList();
 			boardVanisher.resetBoard();
+			if(memberVanisher.getAllMembers().isEmpty()) {
+				memberVanisher.member.setName("Yourself");
+				memberVanisher.addMember();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -326,7 +337,6 @@ public class BoardController {
 			}
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

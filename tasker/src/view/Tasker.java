@@ -83,7 +83,7 @@ public class Tasker {
 				System.out.println("What would you like to work on ?");
 			
 				System.out.println(menu);
-				System.out.println("Enter your choice (board ID) :");
+				System.out.println("Enter your choice (number) :");
 				//TODO check the input from user
 				currentBoard = userIntegerInput.nextInt();
 				System.out.println(currentBoard);
@@ -105,7 +105,7 @@ public class Tasker {
 				//Work on the current board until 8
 				while(continueBoard){
 				
-					System.out.println("What would you like to do?\n");
+					System.out.println("What would you like to do?");
 					System.out.println(" 1. Display the board"
 						+ "\n 2. Rename the board"
 						+ "\n 3. Archive the board"
